@@ -5,13 +5,20 @@
 #include <cmath>
 #include <iostream>
 
-std::vector<double> getVandermondeMatrix(const std::vector<double>& x, size_t N)
+// теперь в последней колонке (-1) ^ i, где i - индекс строки
+// это позволит вычислить h, поэтому это не классическая матрица Вандермонда
+std::vector<double> getModifiedVandermondeMatrix(
+    const std::vector<double>& x, size_t N)
 {
 	auto A = std::vector<double>(N * N);
 
-	for (size_t i = 0; i < N; ++i)
-		for (size_t j = 0; j < N; ++j)
-			A[i * N + j] = std::pow(x[i], j);
+	for (size_t i = 0; i < N; ++i) {
+		// последний столбец заполняется отдельно
+		for (size_t j = 0; j < N - 1; ++j)
+			A(i, j) = std::pow(x[i], j);
+
+		A(i, N - 1) = std::pow(-1.0, i);
+	}
 
 	return A;
 }
@@ -19,21 +26,9 @@ std::vector<double> getVandermondeMatrix(const std::vector<double>& x, size_t N)
 std::vector<double> getCanonicalCoefficients(
     std::vector<double> x, std::vector<double> y)
 {
-	auto A = getVandermondeMatrix(x, x.size());
+	auto A = getModifiedVandermondeMatrix(x, x.size());
 
 	return gaussianEliminationPickMaxColumn(A, y);
-}
-
-std::vector<double> getLagrangianCoefficients(
-    const std::vector<double>& x, const std::vector<double>& y)
-{
-
-	auto coefs = std::vector<double>(x.size());
-
-	for (size_t i = 0; i < x.size(); ++i)
-		coefs[i] = y[i] / phiDenominator(i, x);
-
-	return coefs;
 }
 
 int main(int argc, char* argv[])
@@ -54,9 +49,8 @@ int main(int argc, char* argv[])
 	}
 
 	auto canonicalCoefs = getCanonicalCoefficients(x, y);
-	auto lagrangianCoefs = getLagrangianCoefficients(x, y);
 
-	printResult(x, canonicalCoefs, lagrangianCoefs);
+	printResult(x, canonicalCoefs);
 
 	return 0;
 }

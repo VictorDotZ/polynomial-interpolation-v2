@@ -4,8 +4,6 @@
 
 #include <stdexcept>
 
-#define A(i, j) A[(i)*N + (j)]
-
 std::vector<double> gaussianEliminationPickMaxColumn(
     std::vector<double> A, std::vector<double> x)
 {
@@ -54,7 +52,7 @@ std::vector<double> gaussianEliminationPickMaxColumn(
 		}
 	}
 
-	for (size_t j = N; j >= 1; j--) {
+	for (size_t j = N; j >= 1; --j) {
 		for (size_t i = 0; i < j - 1; ++i) {
 			c = A(i, j - 1);
 			x[i] -= c * x[j - 1];

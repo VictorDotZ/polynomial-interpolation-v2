@@ -25,4 +25,4 @@ CoreFunction.o: CoreFunction.cpp CoreFunction.hpp
 	$(CC) $(FLAGS) -c CoreFunction.cpp
 
 clean:
-	rm -rf *.o *.out *.a *.txt
+	rm -rf *.o *.out *.a *.txt *.png
