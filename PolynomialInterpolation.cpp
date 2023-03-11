@@ -42,23 +42,14 @@ int main()
 	std::cin.exceptions(std::ios::failbit | std::ios::badbit);
 	size_t N;
 
-	try {
-		std::cin >> N;
-	} catch (const std::exception& e) {
-		std::cout << "no N " << e.what() << std::endl;
-		return -1;
-	}
+	std::cin >> N;
 
 	auto x = std::vector<double>(N);
 	auto y = std::vector<double>(N);
-	try {
-		for (size_t i = 0; i < N; ++i) {
-			std::cin >> x[i];
-			std::cin >> y[i];
-		}
-	} catch (const std::exception& e) {
-		std::cout << "no data " << e.what() << std::endl;
-		return -1;
+
+	for (size_t i = 0; i < N; ++i) {
+		std::cin >> x[i];
+		std::cin >> y[i];
 	}
 
 	auto canonicalCoefs = getCanonicalCoefficients(x, y);
