@@ -9,7 +9,7 @@
 std::vector<double> getModifiedVandermondeMatrix(
     const std::vector<double>& x, size_t N);
 std::vector<double> getCanonicalCoefficients(
-    const std::vector<double>& x, const std::vector<double>& y);
+    const std::vector<double>& x, std::vector<double>& y);
 
 // теперь в последней колонке (-1) ^ i, где i - индекс строки
 // это позволит вычислить h, поэтому это не классическая матрица Вандермонда
@@ -30,7 +30,7 @@ std::vector<double> getModifiedVandermondeMatrix(
 }
 
 std::vector<double> getCanonicalCoefficients(
-    const std::vector<double>& x, const std::vector<double>& y)
+    const std::vector<double>& x, std::vector<double>& y)
 {
 	auto A = getModifiedVandermondeMatrix(x, x.size());
 
