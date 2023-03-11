@@ -29,11 +29,10 @@ void printResult(
     const std::vector<double>& x, const std::vector<double>& canonicalCoefs)
 {
 	double step = 0.0;
-	for (size_t i = 0; i + 1 < x.size(); i++) {
+	for (size_t i = 0; i + 1 < x.size(); ++i) {
 		step = (x[i + 1] - x[i]) / 3.0;
-		printRow(x[i] + 0 * step, canonicalCoefs);
-		printRow(x[i] + 1 * step, canonicalCoefs);
-		printRow(x[i] + 2 * step, canonicalCoefs);
+		for (size_t j = 0; j < 3; ++j)
+			printRow(x[i] + j * step, canonicalCoefs);
 	}
 	printRow(x[x.size() - 1], canonicalCoefs);
 }
