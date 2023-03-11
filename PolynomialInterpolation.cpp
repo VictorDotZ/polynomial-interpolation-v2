@@ -4,7 +4,6 @@
 
 #include <cmath>
 #include <iostream>
-#include <sys/select.h>
 
 std::vector<double> getModifiedVandermondeMatrix(
     const std::vector<double>& x, size_t N);
