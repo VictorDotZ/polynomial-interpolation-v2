@@ -4,6 +4,12 @@
 
 #include <cmath>
 #include <iostream>
+#include <sys/select.h>
+
+std::vector<double> getModifiedVandermondeMatrix(
+    const std::vector<double>& x, size_t N);
+std::vector<double> getCanonicalCoefficients(
+    std::vector<double> x, std::vector<double> y);
 
 // теперь в последней колонке (-1) ^ i, где i - индекс строки
 // это позволит вычислить h, поэтому это не классическая матрица Вандермонда
@@ -31,14 +37,14 @@ std::vector<double> getCanonicalCoefficients(
 	return gaussianEliminationPickMaxColumn(A, y);
 }
 
-int main(int argc, char* argv[])
+int main()
 {
-	if (argc != 1)
-		return -1;
-
 	size_t N;
 
 	std::cin >> N;
+
+	if (!std::cin.good())
+		return -1;
 
 	auto x = std::vector<double>(N);
 	auto y = std::vector<double>(N);

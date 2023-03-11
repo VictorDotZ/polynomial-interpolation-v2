@@ -15,8 +15,7 @@ double applyPolynomialCanonical(const std::vector<double>& a, double x)
 	return res + a[0];
 }
 
-void printRow(double x_i, const std::vector<double>& x,
-    const std::vector<double>& canonicalCoefs)
+void printRow(double x_i, const std::vector<double>& canonicalCoefs)
 {
 	const double f = F(x_i);
 	const double canonical = applyPolynomialCanonical(canonicalCoefs, x_i);
@@ -32,9 +31,9 @@ void printResult(
 	double step = 0.0;
 	for (size_t i = 0; i + 1 < x.size(); i++) {
 		step = (x[i + 1] - x[i]) / 3.0;
-		printRow(x[i] + 0 * step, x, canonicalCoefs);
-		printRow(x[i] + 1 * step, x, canonicalCoefs);
-		printRow(x[i] + 2 * step, x, canonicalCoefs);
+		printRow(x[i] + 0 * step, canonicalCoefs);
+		printRow(x[i] + 1 * step, canonicalCoefs);
+		printRow(x[i] + 2 * step, canonicalCoefs);
 	}
-	printRow(x[x.size() - 1], x, canonicalCoefs);
+	printRow(x[x.size() - 1], canonicalCoefs);
 }
