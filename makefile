@@ -10,11 +10,14 @@ FLAGS=	-std=c++2a -mfpmath=sse -fstack-protector-all -W -Wall -Wextra -Wunused -
 
 all: CreateLayout.out PolynomialInterpolation.out
 
-PolynomialInterpolation.out: PolynomialInterpolation.o GaussianElimination.o CoreFunction.o Utils.o
-	$(CC) $(FLAGS) -o PolynomialInterpolation.out PolynomialInterpolation.o GaussianElimination.o CoreFunction.o Utils.o
+PolynomialInterpolation.out: PolynomialInterpolation.o GaussianElimination.o CoreFunction.o Utils.o VallePoussin.o
+	$(CC) $(FLAGS) -o PolynomialInterpolation.out PolynomialInterpolation.o GaussianElimination.o CoreFunction.o Utils.o VallePoussin.o
 
-PolynomialInterpolation.o: PolynomialInterpolation.cpp CoreFunction.hpp
+PolynomialInterpolation.o: PolynomialInterpolation.cpp CoreFunction.hpp VallePoussin.hpp Utils.hpp
 	$(CC) $(FLAGS) -c PolynomialInterpolation.cpp
+
+VallePoussin.o: VallePoussin.cpp VallePoussin.hpp Utils.hpp
+	$(CC) $(FLAGS) -c VallePoussin.cpp 
 
 Utils.o: Utils.cpp Utils.hpp
 	$(CC) $(FLAGS) -c Utils.cpp
