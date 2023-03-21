@@ -47,7 +47,7 @@ std::vector<size_t> getBasisIndices(unsigned n_coeffs_with_h)
 	return basisIds;
 }
 
-std::pair<std::vector<double>, std::vector<double>> getBasis(
+std::tuple<std::vector<double>, std::vector<double>> getBasis(
     const std::vector<double>& x, const std::vector<double>& y,
     const std::vector<size_t>& basisIds)
 {
@@ -59,20 +59,21 @@ std::pair<std::vector<double>, std::vector<double>> getBasis(
 		basisY.push_back(y[idx]);
 	}
 
-	return std::pair<std::vector<double>, std::vector<double>>(basisX, basisY);
+	return std::make_tuple(basisX, basisY);
 }
 
 std::vector<double> getValleePoussinCanonicalCoefficitnts(
-    const std::vector<double>& x, const std::vector<double>& y,
+    const std::vector<double>& x, std::vector<double>& y,
     const size_t nCoefficientsWithH)
 {
 	auto basisIds = getBasisIndices(nCoefficientsWithH);
+	std::vector<double> coeffs;
 
 	do {
-		auto& [basisX, basisY] = getBasis(x, y, basisIds);
+		auto [basisX, basisY] = getBasis(x, y, basisIds);
 
 		try {
-			auto getCanonicalCoefficients(basisX, basisY);
+			coeffs = getCanonicalCoefficients(basisX, basisY);
 		} catch (std::runtime_error& e) {
 			break;
 		}
