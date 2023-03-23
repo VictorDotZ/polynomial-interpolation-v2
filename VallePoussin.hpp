@@ -23,8 +23,6 @@ private:
 
 	std::tuple<double, int> getMaxDeviationWithPos();
 
-	std::vector<size_t>::iterator getGreater(size_t key);
-
 	bool isAdjustable(size_t hMaxIdx);
 
 	size_t m_N;

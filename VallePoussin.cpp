@@ -17,6 +17,8 @@ VallePoussinSolver::VallePoussinSolver(size_t N, size_t polynomialDegree,
 {
 	m_nCoefficientsWithH = m_polynomialDegree + 2;
 
+	m_coeffs = std::vector<double>(m_nCoefficientsWithH);
+
 	m_basisIds = std::vector<size_t>(m_nCoefficientsWithH);
 
 	std::iota(m_basisIds.begin(), m_basisIds.end(), 0);
@@ -24,11 +26,21 @@ VallePoussinSolver::VallePoussinSolver(size_t N, size_t polynomialDegree,
 
 std::vector<double> VallePoussinSolver::getCanonicalCoefficients()
 {
-
 	do {
 		auto [basisX, basisY] = getBasis();
-
+		std::cout << "basis ids: ";
 		for (auto elem : m_basisIds) {
+			std::cout << elem << " ";
+		}
+		std::cout << std::endl;
+
+		std::cout << "after prepare basis: "
+		          << "\n X: ";
+		for (auto elem : basisX) {
+			std::cout << elem << " ";
+		}
+		std::cout << "\n Y: ";
+		for (auto elem : basisY) {
 			std::cout << elem << " ";
 		}
 		std::cout << std::endl;
@@ -42,7 +54,8 @@ std::vector<double> VallePoussinSolver::getCanonicalCoefficients()
 
 		auto [hMax, hMaxIdx] = getMaxDeviationWithPos();
 
-		std::cout << std::abs(m_coeffs.back()) << std::endl;
+		std::cout << "max dev: " << hMax << ",\t max pos: " << hMaxIdx
+		          << std::endl;
 
 		if (std::abs(std::abs(m_coeffs.back()) - hMax) < m_eps)
 			break;
@@ -52,7 +65,7 @@ std::vector<double> VallePoussinSolver::getCanonicalCoefficients()
 
 	} while (true);
 
-	return std::vector<double>(m_coeffs.begin(), m_coeffs.end()--);
+	return std::vector<double>(m_coeffs.begin(), m_coeffs.end() - 1);
 }
 
 std::tuple<std::vector<double>, std::vector<double>>
@@ -77,7 +90,7 @@ VallePoussinSolver::getBasis()
 double VallePoussinSolver::applyPolynomialCanonical(double x)
 {
 	return Default::applyPolynomialCanonical(
-	    std::vector(m_coeffs.begin(), --m_coeffs.end()), x);
+	    std::vector(m_coeffs.begin(), m_coeffs.end() - 1), x);
 }
 
 double VallePoussinSolver::getDelta(size_t idx)
@@ -91,18 +104,23 @@ std::tuple<double, int> VallePoussinSolver::getMaxDeviationWithPos()
 	std::iota(res.begin(), res.end(), 0);
 	auto mapper = [this](size_t i) { return std::abs(getDelta(i)); };
 
-	std::transform(m_x.begin(), m_x.end(), std::back_inserter(res), mapper);
+	std::cout << "res (ids): ";
+	for (auto elem : res) {
+		std::cout << elem << " ";
+	}
+	std::cout << std::endl;
+
+	std::transform(res.begin(), res.end(), res.begin(), mapper);
+
+	std::cout << "res (deviation): ";
+	for (auto elem : res) {
+		std::cout << elem << " ";
+	}
+	std::cout << std::endl;
+
 	auto hMax = std::max_element(res.begin(), res.end());
 
 	return std::make_tuple(*hMax, std::distance(res.begin(), hMax));
-}
-
-std::vector<size_t>::iterator VallePoussinSolver::getGreater(size_t key)
-{
-	auto it = std::upper_bound(m_basisIds.begin(), m_basisIds.end(), key,
-	    std::greater_equal<size_t>());
-
-	return it;
 }
 
 bool VallePoussinSolver::isAdjustable(size_t hMaxIdx)
@@ -110,9 +128,6 @@ bool VallePoussinSolver::isAdjustable(size_t hMaxIdx)
 	auto leftBound = m_basisIds.front();
 	auto rightBound = m_basisIds.back();
 	const auto maxDeviationSign = sign(getDelta(hMaxIdx));
-
-	std::cout << "maxDeviationSign sign: " << maxDeviationSign << std::endl;
-	// return false;
 
 	if (hMaxIdx < leftBound) {
 		if (maxDeviationSign != sign(getDelta(leftBound)))
@@ -127,28 +142,26 @@ bool VallePoussinSolver::isAdjustable(size_t hMaxIdx)
 			std::shift_left(m_basisIds.begin(), m_basisIds.end(), 1);
 
 		m_basisIds.back() = hMaxIdx;
-		std::cout << "!!" << std::endl;
-
 		return true;
 	}
 
-	auto rightNeighbour = std::upper_bound(m_basisIds.begin(), m_basisIds.end(),
-	    hMaxIdx, std::greater_equal<size_t>());
+	auto rightNeighbour
+	    = std::lower_bound(m_basisIds.begin(), m_basisIds.end(), hMaxIdx);
 
-	std::cout << "upper_bound: " << *rightNeighbour << "  " << hMaxIdx
-	          << std::endl;
+	std::cout << "lb: " << *rightNeighbour << std::endl;
 
 	if (*rightNeighbour == hMaxIdx)
 		return false;
 
 	auto leftNeighbour = rightNeighbour - 1;
 
-	std::cout << "leftNeighbour sign: " << sign(getDelta(*leftNeighbour))
-	          << std::endl;
-
 	if (maxDeviationSign == sign(getDelta(*leftNeighbour))) {
+		std::cout << "(sing!=) ptrln: " << *leftNeighbour
+		          << ", mds: " << hMaxIdx << std::endl;
 		*leftNeighbour = hMaxIdx;
 	} else {
+		std::cout << "(sing!=) ptrrn: " << *rightNeighbour
+		          << ", mds: " << hMaxIdx << std::endl;
 		*rightNeighbour = hMaxIdx;
 	}
 
