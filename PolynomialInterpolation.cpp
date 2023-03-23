@@ -1,59 +1,51 @@
 #include "CoreFunction.hpp"
 #include "GaussianElimination.hpp"
 #include "Utils.hpp"
+#include "VallePoussin.hpp"
 
-#include <cmath>
 #include <iostream>
 
-std::vector<double> getModifiedVandermondeMatrix(
-    const std::vector<double>& x, size_t N);
-std::vector<double> getCanonicalCoefficients(
-    const std::vector<double>& x, std::vector<double>& y);
+/*
+    в предыдущей реализации всё зависело от количества точек.
+    То есть подавалась одна лишняя точка, из-за чего
+    размерность вектора коэффициентов была на 1 больше нужной
 
-// теперь в последней колонке (-1) ^ i, где i - индекс строки
-// это позволит вычислить h, поэтому это не классическая матрица Вандермонда
-std::vector<double> getModifiedVandermondeMatrix(
-    const std::vector<double>& x, size_t N)
-{
-	auto A = std::vector<double>(N * N);
+*/
 
-	for (size_t i = 0; i < N; ++i) {
-		// последний столбец заполняется отдельно
-		for (size_t j = 0; j < N - 1; ++j)
-			A(i, j) = std::pow(x[i], j);
-
-		A(i, N - 1) = std::pow(-1.0, i);
-	}
-
-	return A;
-}
-
-std::vector<double> getCanonicalCoefficients(
-    const std::vector<double>& x, std::vector<double>& y)
-{
-	auto A = getModifiedVandermondeMatrix(x, x.size());
-
-	return gaussianEliminationPickMaxColumn(A, y);
-}
-
-int main()
+int main(int argc, char* argv[])
 {
 	std::cin.exceptions(std::ios::failbit | std::ios::badbit);
 	size_t N;
+	size_t polynomialDegree;
 
+	if (argc >= 2)
+		polynomialDegree = std::stoull(argv[1]);
+
+	// the number of points
+	// should be greatest then or equeal to polynomail degree
+	// for vallee poussin method
 	std::cin >> N;
 
+	if (polynomialDegree >= N - 1)
+		return -1;
+
 	auto x = std::vector<double>(N);
+
 	auto y = std::vector<double>(N);
 
-	for (size_t i = 0; i < N; ++i) {
-		std::cin >> x[i];
-		std::cin >> y[i];
+	for (size_t i = 0; i < N; ++i)
+		std::cin >> x[i] >> y[i];
+
+	size_t nCoefficientsWithH = polynomialDegree + 2;
+
+	std::vector<double> canonicalCoefs;
+
+	if (nCoefficientsWithH == N) {
+		printResult(x, Default::getCanonicalCoefficients(x, y));
+	} else {
+		auto solver = VallePoussinSolver(N, polynomialDegree, x, y, 1e-5);
+		printResult(x, solver.getCanonicalCoefficients());
 	}
-
-	auto canonicalCoefs = getCanonicalCoefficients(x, y);
-
-	printResult(x, canonicalCoefs);
 
 	return 0;
 }

@@ -26,7 +26,10 @@ void NodesGenerator::setMethod(std::string methodName)
 std::vector<double> NodesGenerator::generate(
     size_t N, double leftBound, double rightBound)
 {
-	return m_selectedMethod(N, leftBound, rightBound);
+	auto nodes = m_selectedMethod(N, leftBound, rightBound);
+
+	std::sort(nodes.begin(), nodes.end());
+	return nodes;
 }
 
 const std::vector<double> NodesGenerator::chebyshev(
