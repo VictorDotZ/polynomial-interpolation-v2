@@ -6,7 +6,7 @@ std::vector<double> getModifiedVandermondeMatrix(
 
 namespace Default {
 std::vector<double> getCanonicalCoefficients(
-    std::vector<double> x, std::vector<double> y);
+    const std::vector<double>& x, std::vector<double>& y);
 
 double applyPolynomialCanonical(const std::vector<double>& a, double x);
 };

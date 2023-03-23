@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 std::vector<double> gaussianEliminationPickMaxColumn(
-    std::vector<double> A, std::vector<double> x)
+    std::vector<double>& A, std::vector<double> x)
 {
 	size_t N = x.size();
 	size_t maxColIdx = 0;

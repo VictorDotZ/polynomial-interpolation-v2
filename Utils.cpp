@@ -24,7 +24,7 @@ std::vector<double> getModifiedVandermondeMatrix(
 }
 
 std::vector<double> Default::getCanonicalCoefficients(
-    std::vector<double> x, std::vector<double> y)
+    const std::vector<double>& x, std::vector<double>& y)
 {
 	auto A = getModifiedVandermondeMatrix(x, x.size());
 
@@ -58,8 +58,6 @@ void printRow(double x_i, const std::vector<double>& canonicalCoefs)
 void printResult(
     const std::vector<double>& x, const std::vector<double>& canonicalCoefs)
 {
-
-	for (size_t i = 0; i < x.size(); ++i) {
+	for (size_t i = 0; i < x.size(); ++i)
 		printRow(x[i], canonicalCoefs);
-	}
 }

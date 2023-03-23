@@ -5,8 +5,9 @@
 class VallePoussinSolver {
 
 public:
-	VallePoussinSolver(size_t N, size_t polynomialDegree, std::vector<double> x,
-	    std::vector<double> y, double eps /*= 1e-5*/);
+	VallePoussinSolver(size_t N, size_t polynomialDegree,
+	    const std::vector<double>& x, const std::vector<double>& y,
+	    double eps /*= 1e-5*/);
 
 	std::vector<double> getCanonicalCoefficients();
 

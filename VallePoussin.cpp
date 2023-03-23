@@ -3,12 +3,12 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <numeric>
 #include <vector>
 
 VallePoussinSolver::VallePoussinSolver(size_t N, size_t polynomialDegree,
-    std::vector<double> x, std::vector<double> y, double eps = 1e-5)
+    const std::vector<double>& x, const std::vector<double>& y,
+    double eps = 1e-5)
     : m_N(N)
     , m_polynomialDegree(polynomialDegree)
     , m_x(x)
@@ -16,8 +16,6 @@ VallePoussinSolver::VallePoussinSolver(size_t N, size_t polynomialDegree,
     , m_eps(eps)
 {
 	m_nCoefficientsWithH = m_polynomialDegree + 2;
-
-	m_coeffs = std::vector<double>(m_nCoefficientsWithH);
 
 	m_basisIds = std::vector<size_t>(m_nCoefficientsWithH);
 
@@ -28,34 +26,14 @@ std::vector<double> VallePoussinSolver::getCanonicalCoefficients()
 {
 	do {
 		auto [basisX, basisY] = getBasis();
-		std::cout << "basis ids: ";
-		for (auto elem : m_basisIds) {
-			std::cout << elem << " ";
-		}
-		std::cout << std::endl;
-
-		std::cout << "after prepare basis: "
-		          << "\n X: ";
-		for (auto elem : basisX) {
-			std::cout << elem << " ";
-		}
-		std::cout << "\n Y: ";
-		for (auto elem : basisY) {
-			std::cout << elem << " ";
-		}
-		std::cout << std::endl;
 
 		try {
 			m_coeffs = Default::getCanonicalCoefficients(basisX, basisY);
 		} catch (std::runtime_error& e) {
-			std::cout << e.what() << std::endl;
 			break;
 		}
 
 		auto [hMax, hMaxIdx] = getMaxDeviationWithPos();
-
-		std::cout << "max dev: " << hMax << ",\t max pos: " << hMaxIdx
-		          << std::endl;
 
 		if (std::abs(std::abs(m_coeffs.back()) - hMax) < m_eps)
 			break;
@@ -102,21 +80,10 @@ std::tuple<double, int> VallePoussinSolver::getMaxDeviationWithPos()
 {
 	std::vector<double> res(m_x.size());
 	std::iota(res.begin(), res.end(), 0);
+
 	auto mapper = [this](size_t i) { return std::abs(getDelta(i)); };
 
-	std::cout << "res (ids): ";
-	for (auto elem : res) {
-		std::cout << elem << " ";
-	}
-	std::cout << std::endl;
-
 	std::transform(res.begin(), res.end(), res.begin(), mapper);
-
-	std::cout << "res (deviation): ";
-	for (auto elem : res) {
-		std::cout << elem << " ";
-	}
-	std::cout << std::endl;
 
 	auto hMax = std::max_element(res.begin(), res.end());
 
@@ -148,20 +115,14 @@ bool VallePoussinSolver::isAdjustable(size_t hMaxIdx)
 	auto rightNeighbour
 	    = std::lower_bound(m_basisIds.begin(), m_basisIds.end(), hMaxIdx);
 
-	std::cout << "lb: " << *rightNeighbour << std::endl;
-
 	if (*rightNeighbour == hMaxIdx)
 		return false;
 
 	auto leftNeighbour = rightNeighbour - 1;
 
 	if (maxDeviationSign == sign(getDelta(*leftNeighbour))) {
-		std::cout << "(sing!=) ptrln: " << *leftNeighbour
-		          << ", mds: " << hMaxIdx << std::endl;
 		*leftNeighbour = hMaxIdx;
 	} else {
-		std::cout << "(sing!=) ptrrn: " << *rightNeighbour
-		          << ", mds: " << hMaxIdx << std::endl;
 		*rightNeighbour = hMaxIdx;
 	}
 
